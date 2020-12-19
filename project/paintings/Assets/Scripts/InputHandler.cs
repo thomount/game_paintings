@@ -4,6 +4,13 @@ using UnityEngine;
 
 public class InputHandler : MonoBehaviour
 {
+
+    public float std_v = 3;
+    public float std_jump_force1 = 8;
+    public float std_jump_force2 = 6;
+
+    public int jump_limit = 2;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -35,16 +42,16 @@ public class InputHandler : MonoBehaviour
         }
         Debug.Log(GameObject.Find("Main Camera").transform.position);
         */
-        if (Input.GetKey(KeyCode.LeftArrow))
+        if (Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.A))
         {
             //Debug.Log("Left");
-            GameObject.Find("Hero").GetComponent<Hero>().Move(-2);
+            GameObject.Find("Hero").GetComponent<Hero>().Move(-std_v);
         }
 
-        if (Input.GetKey(KeyCode.RightArrow))
+        if (Input.GetKey(KeyCode.RightArrow) || Input.GetKey(KeyCode.D))
         {
             //Debug.Log("Right");
-            GameObject.Find("Hero").GetComponent<Hero>().Move(2);
+            GameObject.Find("Hero").GetComponent<Hero>().Move(std_v);
         }
         if (Input.GetKey(KeyCode.UpArrow) || Input.GetKey(KeyCode.Space))
         {
@@ -57,6 +64,14 @@ public class InputHandler : MonoBehaviour
         if (Input.GetKey(KeyCode.DownArrow))
         {
             //Debug.Log("Down");
+        }
+
+
+        if (Input.GetKey(KeyCode.J)) {
+            GameObject.Find("Hero").GetComponent<Hero>().Attack(0);
+        }
+        if (Input.GetKey(KeyCode.K)) {
+            GameObject.Find("Hero").GetComponent<Hero>().Attack(1);
         }
     }
 }

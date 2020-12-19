@@ -10,6 +10,7 @@ public class MapLoader : MonoBehaviour
         var cube_num = 40;
         for (int i = 0; i < cube_num; i++) {
             GameObject cube_clone = Instantiate(GameObject.Find("Cube"));
+            cube_clone.name = "Cube_"+i.ToString();
             cube_clone.transform.position = new Vector2(Random.Range(-10, 10), Random.Range(-10, 10));
         }
     }
