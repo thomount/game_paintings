@@ -4,13 +4,13 @@ using UnityEngine;
 
 public class InputHandler : MonoBehaviour
 {
-
+    /*
     public float std_v = 3;
     public float std_jump_force1 = 8;
     public float std_jump_force2 = 6;
 
     public int jump_limit = 2;
-
+    */
     // Start is called before the first frame update
     void Start()
     {
@@ -45,21 +45,21 @@ public class InputHandler : MonoBehaviour
         if (Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.A))
         {
             //Debug.Log("Left");
-            GameObject.Find("Hero").GetComponent<Hero>().Move(-std_v);
+            GameObject.Find("MainHero").GetComponent<Hero>().Move(-1);
         }
 
         if (Input.GetKey(KeyCode.RightArrow) || Input.GetKey(KeyCode.D))
         {
             //Debug.Log("Right");
-            GameObject.Find("Hero").GetComponent<Hero>().Move(std_v);
+            GameObject.Find("MainHero").GetComponent<Hero>().Move(1);
         }
         if (Input.GetKey(KeyCode.UpArrow) || Input.GetKey(KeyCode.Space))
         {
             //Debug.Log("Up");
-            GameObject.Find("Hero").GetComponent<Hero>().Jump(true);
+            GameObject.Find("MainHero").GetComponent<Hero>().Jump(true);
         } else
         {
-            GameObject.Find("Hero").GetComponent<Hero>().Jump(false);
+            GameObject.Find("MainHero").GetComponent<Hero>().Jump(false);
         }
         if (Input.GetKey(KeyCode.DownArrow))
         {
@@ -68,10 +68,10 @@ public class InputHandler : MonoBehaviour
 
 
         if (Input.GetKey(KeyCode.J)) {
-            GameObject.Find("Hero").GetComponent<Hero>().Attack(0);
+            GameObject.Find("MainHero").GetComponent<Hero>().Attack(0);
         }
         if (Input.GetKey(KeyCode.K)) {
-            GameObject.Find("Hero").GetComponent<Hero>().Attack(1);
+            GameObject.Find("MainHero").GetComponent<Hero>().Attack(1);
         }
     }
 }
