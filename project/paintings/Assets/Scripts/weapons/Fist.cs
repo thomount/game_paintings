@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class Fist : Weapon
 {
+    float last_record = 0;
     // Start is called before the first frame update
     void Start()
     {
@@ -14,8 +15,8 @@ public class Fist : Weapon
         mode = 1;   //徒手武器
         var obj = gameObject.AddComponent<BoxCollider2D>();
         obj.isTrigger = true;
-        obj.size = new Vector2(0.3f, 0.3f);
-
+        obj.size = new Vector2(1.0f, 1.0f);
+        offset = new Vector2(1.0f, 0);
     }
 
     // Update is called once per frame
@@ -28,12 +29,17 @@ public class Fist : Weapon
         //Debug.Log("Fist attack");
         if (last.x == 0)
             return new Vector2Int(1, 20);
-        if (last.y > 0)
-            return new Vector2Int(last.x, last.y - 1);
+        if ((Time.time - last_record)*60 < last.y)
+            return last;
+        last_record = Time.time;
         if (last.x == 1) { 
-            return new Vector2Int(2, 10);
+            return new Vector2Int(2, 0);
         }
         if (last.x == 2) { 
+            return new Vector2Int(3, 10);
+        }
+        if (last.x == 3)
+        {
             return new Vector2Int(0, 0);
         }
         return new Vector2Int(0, 0);

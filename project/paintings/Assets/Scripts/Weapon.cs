@@ -10,6 +10,7 @@ public class Weapon : MonoBehaviour
     public int attM = 0;
     public float crt = 0;
     public Hero owner;
+    public Vector2 offset;
     public 
     // Start is called before the first frame update
     void Start()
@@ -37,7 +38,8 @@ public class Weapon : MonoBehaviour
     // 攻击判定区域对象
     public void get_hit(int mask) {
         var obj = gameObject.GetComponent<Collider2D>();
-        obj.offset = owner.facing * new Vector2(1, 0);
+        obj.offset = offset;
+        //Debug.Log(obj.offset.ToString()+owner.facing.ToString()+(obj.bounds.center - obj.transform.position).ToString());
         var filter = new ContactFilter2D();
         filter.SetLayerMask(mask);
         //Debug.Log(mask);
@@ -47,7 +49,18 @@ public class Weapon : MonoBehaviour
         obj.OverlapCollider(filter, cds);
         obj.isTrigger = true;
         //Debug.Log(obj.transform.position);
-        if (cds.Count == 0) Debug.Log("Miss");
+        if (cds.Count == 0)
+        {
+            //Debug.Log("Miss" + obj.offset.ToString() + obj.bounds.ToString() + owner.gameObject.transform.position.ToString());
+            /*
+            var cube = Instantiate(GameObject.Find("Cube"));
+            cube.name = "hitting place";
+            cube.GetComponent<Collider2D>().isTrigger = true;
+            cube.transform.position = obj.bounds.center;
+            cube.transform.localScale = 2 * obj.bounds.extents;
+            cube.layer = LayerMask.NameToLayer("Player");
+            */
+        }
         foreach (var cd in cds) {
             get_damage(cd.gameObject);
         }

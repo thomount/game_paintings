@@ -272,7 +272,7 @@ public class Hero : MonoBehaviour
     }
 
     void attack_update() {
-        // 0 : 无攻击 1: 前摇(受击打断)  2：攻击后摇(受击打断/技能打断) 3：combo等待期
+        // 0 : 无攻击 1: 前摇(受击打断)  2：攻击判定 3：攻击后摇(受击打断/技能打断) 4：combo等待期
         if (attacked > 0) attacked--;
         if (attack_signal > 0 && active_weapon == 0 && weapon[attack_signal - 1] != null)
         {
@@ -282,7 +282,7 @@ public class Hero : MonoBehaviour
         }
         if (active_weapon != 0)
         {
-            if (attack_state.x == 1 && attack_state.y == 0) {
+            if (attack_state.x == 2) {
                 //Debug.Log("hiting");
                 weapon[active_weapon - 1].get_hit(attack_layer);
             }
@@ -296,7 +296,7 @@ public class Hero : MonoBehaviour
             attack_mode = 0;
         }
 
-        Debug.Log(active_weapon.ToString() + " " + attack_state.ToString());
+        //Debug.Log(active_weapon.ToString() + " " + attack_state.ToString());
         // 
 
 
