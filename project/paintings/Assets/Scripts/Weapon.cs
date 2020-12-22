@@ -11,7 +11,10 @@ public class Weapon : MonoBehaviour
     public float crt = 0;
     public Hero owner;
     public Vector2 offset;
-    public 
+    public Vector2 force;
+    public int control_time = 0;
+
+    public
     // Start is called before the first frame update
     void Start()
     {
@@ -49,30 +52,34 @@ public class Weapon : MonoBehaviour
         obj.OverlapCollider(filter, cds);
         obj.isTrigger = true;
         //Debug.Log(obj.transform.position);
+        /*
         if (cds.Count == 0)
         {
-            //Debug.Log("Miss" + obj.offset.ToString() + obj.bounds.ToString() + owner.gameObject.transform.position.ToString());
-            /*
+            Debug.Log("Miss" + obj.bounds.center.ToString());
+            
             var cube = Instantiate(GameObject.Find("Cube"));
             cube.name = "hitting place";
             cube.GetComponent<Collider2D>().isTrigger = true;
             cube.transform.position = obj.bounds.center;
             cube.transform.localScale = 2 * obj.bounds.extents;
             cube.layer = LayerMask.NameToLayer("Player");
-            */
+            
         }
+        */
         foreach (var cd in cds) {
             get_damage(cd.gameObject);
         }
         obj.offset = new Vector2(0, 0);
     }
 
-    public List<int> get_damage(GameObject enemy) {
+    void get_damage(GameObject enemy) {
         var ret = new List<int>(2);
         ret.Add(attP);
         ret.Add(attM);
         Debug.Log("attacking " +enemy.name);
-        return ret;
+        var act_force = force;
+        act_force.x *= owner.facing;
+        enemy.GetComponent<Hero>().receive_force(act_force, control_time);
     }
 
     public GameObject get_effect() {

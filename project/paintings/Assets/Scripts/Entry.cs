@@ -8,7 +8,8 @@ public class Entry : MonoBehaviour
     void Start()
     {
         var hero = Instantiate(GameObject.Find("Hero"));
-        GameObject.Find("Hero").SetActive(false);
+
+        GameObject.Find("Hero").GetComponent<Renderer>().enabled = false;
         hero.AddComponent<Hero>();
         hero.GetComponent<Hero>().set_type("hero");
         hero.name = "MainHero";      

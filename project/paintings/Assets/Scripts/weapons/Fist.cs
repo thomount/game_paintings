@@ -17,6 +17,8 @@ public class Fist : Weapon
         obj.isTrigger = true;
         obj.size = new Vector2(1.0f, 1.0f);
         offset = new Vector2(1.0f, 0);
+        force = new Vector2(3, 3);
+        control_time = 20;
     }
 
     // Update is called once per frame

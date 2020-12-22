@@ -36,6 +36,7 @@ public class Hero : MonoBehaviour
     private int move = 0;
     private int ground = 1;
     private int control_flag = 0;
+    private float control_end_time = 0;
     private int attacked = 0;       // 攻击开始信号
     private int attack_mode = 0;    // 攻击模式
     private int skill = 0;          // 技能时间
@@ -54,9 +55,13 @@ public class Hero : MonoBehaviour
     private LayerMask attack_layer = 0;
     private LayerMask ob_layer = 0;
 
-    private List<Vector3> force_list;
+    private List<Vector2> force_list;
+    private float resist = 1;
     // Start is called before the first frame update
 
+
+    // basci state
+    private string type;
     // TODO Bag system
     //private Bag bag = null;
     
@@ -70,13 +75,13 @@ public class Hero : MonoBehaviour
         jumpState = 0;
         anim = null;
         cld = GetComponent<Collider2D>();
-        force_list = new List<Vector3>();
+        force_list = new List<Vector2>();
         control_flag = 0;
         anim = gameObject.GetComponent<Animator>();
 
         attack_state = new Vector2Int(0, 0);
 
-        var obj = GameObject.Find("Weapon");
+        var obj = Instantiate(GameObject.Find("Weapon"));
         obj.layer = LayerMask.NameToLayer("Weapon");
         var fist = obj.AddComponent<Fist>();
         fist.set_owner(gameObject);
@@ -87,6 +92,7 @@ public class Hero : MonoBehaviour
     }
 
     public void set_type(string s) {
+        type = s;
         if (s == "enemy") {
             gameObject.AddComponent<AI_Random>();
         }
@@ -100,6 +106,14 @@ public class Hero : MonoBehaviour
             attack_layer = LayerMask.GetMask("Enemy");
             ob_layer = LayerMask.GetMask("Enemy", "Wall");
         }
+        if (s == "enemy_test") {
+            jumpV1 = 8;
+            jumpV2 = 6;
+            jumpLimit = 1;
+            move_v = 3; 
+            attack_layer = LayerMask.GetMask("Player");
+            ob_layer = LayerMask.GetMask("Player", "Wall");
+        }
     }
     // Update is called once per frame
     void Update()
@@ -112,21 +126,28 @@ public class Hero : MonoBehaviour
 
         ground_update();
 
-        background_update();
+        if (type == "hero") background_update();
 
         animate_update();
     }
 
     void control_update() {
-        if (control_flag > 0) control_flag --;
+        if (control_flag == 1) {
+            if (Time.time > control_end_time) control_flag = 0;
+        }
         if (hard > 0) hard--;
     }
 
-    void receive_force(Vector3 vec, int control_time) {
+    public void receive_force(Vector3 vec, int control_time) {
         if (hard == 0) {
             force_list.Add(vec);
+            Debug.Log("receive force " + vec.ToString());
             if (control_flag != -1) {
-                control_flag = Mathf.Max(control_flag, control_time); 
+                if (control_flag == 0) {
+                    control_end_time = Time.time;
+                    control_flag = 1;
+                }
+                control_end_time += control_time / 60.0f;
             }
         }
     }
@@ -211,7 +232,8 @@ public class Hero : MonoBehaviour
 
         } else {
             foreach (var force in force_list) {
-                body.AddForce(force);
+                body.velocity += force;
+                Debug.Log("add force" + force.ToString());
             }
         }
         force_list.Clear();

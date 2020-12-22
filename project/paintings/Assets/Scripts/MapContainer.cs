@@ -45,10 +45,13 @@ public class MapContainer : MonoBehaviour
                 }
                 
             }
-            var enemy = Instantiate(GameObject.Find("Cube"));
-            enemy.transform.position = new Vector2(3, 2);
+            var base_hero = GameObject.Find("Hero");
+            var enemy = Instantiate(base_hero);
+            enemy.GetComponent<Renderer>().enabled = true;
+            enemy.transform.position = new Vector2(5, 6);
             enemy.transform.parent = transform;
             enemy.layer = LayerMask.NameToLayer("Enemy");
+            enemy.AddComponent<Hero>().set_type("enemy_test");
             enemy.name = "enemy";
         }
         hero.transform.position = pos + hero_offset;
