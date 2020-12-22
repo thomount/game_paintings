@@ -5,13 +5,15 @@ using UnityEngine;
 public class MapContainer : MonoBehaviour
 {
     private GameObject hero;
+    public AudioSource MusicPlayer;
     // Start is called before the first frame update
     void Start()
     {
+        MusicPlayer = gameObject.AddComponent<AudioSource>();
     }
 
     public void init(string s, Vector2 pos) {
-        
+        MusicPlayer.clip = null;
         hero = GameObject.Find("MainHero");
         //Debug.Log(transform.position);
         Vector2 hero_offset = new Vector2(0,0);
@@ -37,6 +39,8 @@ public class MapContainer : MonoBehaviour
             Plat_off.Add(new Vector2(-9, -3));
             Plat_off.Add(new Vector2(5, 3));
             Plat_off.Add(new Vector2(5, -3));
+            for (int i = -50; i < 50; i+= 5) 
+                Plat_off.Add(new Vector2(i, -6));
             for (int i = 0; i < plat_len; i++) {
                 foreach (Vector2 off in Plat_off) {
                     GameObject cube_clone = Instantiate(GameObject.Find("Cube"));
@@ -45,17 +49,23 @@ public class MapContainer : MonoBehaviour
                 }
                 
             }
-            var base_hero = GameObject.Find("Hero");
+            var base_hero = Resources.Load<GameObject>("stickman/Hero");
             var enemy = Instantiate(base_hero);
-            enemy.GetComponent<Renderer>().enabled = true;
             enemy.transform.position = new Vector2(5, 6);
             enemy.transform.parent = transform;
-            enemy.layer = LayerMask.NameToLayer("Enemy");
+            //enemy.layer = LayerMask.NameToLayer("Enemy");
             enemy.AddComponent<Hero>().set_type("enemy_test");
             enemy.name = "enemy";
+            MusicPlayer.clip = Resources.Load<AudioClip>("music/main_menu");
+            //MusicPlayer.clip = Resources.Load<AudioClip>("music/stickman/run");
+            MusicPlayer.loop = true;
+            MusicPlayer.volume = 0.01f;
+            //Debug.Log(MusicPlayer.clip);
         }
         hero.transform.position = pos + hero_offset;
         transform.position = pos;
+        if (MusicPlayer.clip != null) MusicPlayer.Play();
+        
     }
 
     void del() {

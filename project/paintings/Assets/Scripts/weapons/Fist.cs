@@ -8,6 +8,7 @@ public class Fist : Weapon
     // Start is called before the first frame update
     void Start()
     {
+        sounds = gameObject.AddComponent<AudioSource>();
         //Debug.Log("Fist init");
         usage = 1;
         attP = 10;
@@ -17,8 +18,13 @@ public class Fist : Weapon
         obj.isTrigger = true;
         obj.size = new Vector2(1.0f, 1.0f);
         offset = new Vector2(1.0f, 0);
-        force = new Vector2(3, 3);
+        force = new Vector2(2, 2);
         control_time = 20;
+
+        sounds.clip = Resources.Load<AudioClip>("music/weapons/fist");
+        sounds.loop = false;
+        sounds.volume = 0.3f;
+        
     }
 
     // Update is called once per frame
@@ -30,7 +36,10 @@ public class Fist : Weapon
     {
         //Debug.Log("Fist attack");
         if (last.x == 0)
-            return new Vector2Int(1, 20);
+        {
+            last_record = Time.time;
+            return new Vector2Int(1, 15);
+        }
         if ((Time.time - last_record)*60 < last.y)
             return last;
         last_record = Time.time;
@@ -38,7 +47,7 @@ public class Fist : Weapon
             return new Vector2Int(2, 0);
         }
         if (last.x == 2) { 
-            return new Vector2Int(3, 10);
+            return new Vector2Int(3, 30);
         }
         if (last.x == 3)
         {

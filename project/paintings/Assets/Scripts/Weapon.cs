@@ -13,11 +13,11 @@ public class Weapon : MonoBehaviour
     public Vector2 offset;
     public Vector2 force;
     public int control_time = 0;
-
-    public
+    public AudioSource sounds;
     // Start is called before the first frame update
     void Start()
     {
+        
     }
 
     // Update is called once per frame
@@ -66,6 +66,7 @@ public class Weapon : MonoBehaviour
             
         }
         */
+        if (cds.Count > 0) get_effect();
         foreach (var cd in cds) {
             get_damage(cd.gameObject);
         }
@@ -76,13 +77,14 @@ public class Weapon : MonoBehaviour
         var ret = new List<int>(2);
         ret.Add(attP);
         ret.Add(attM);
-        Debug.Log("attacking " +enemy.name);
+        //Debug.Log("attacking " +enemy.name);
         var act_force = force;
         act_force.x *= owner.facing;
         enemy.GetComponent<Hero>().receive_force(act_force, control_time);
     }
 
     public GameObject get_effect() {
+        sounds.Play();
         return new GameObject();
     }
 }

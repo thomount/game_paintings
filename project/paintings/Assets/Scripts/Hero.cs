@@ -46,11 +46,13 @@ public class Hero : MonoBehaviour
     private Weapon[] weapon = new Weapon[2];
 
     // attack state
+    public int Attack_Signal_Last_Time = 20;
     private Vector2Int attack_state;
     private int attack_signal = 0;
     private int combo_last_time = 0;
     private int combos = 0;
     private int active_weapon = 0;
+    private int hitted = 0;
 
     private LayerMask attack_layer = 0;
     private LayerMask ob_layer = 0;
@@ -62,9 +64,18 @@ public class Hero : MonoBehaviour
 
     // basci state
     private string type;
+    public bool inited = false;
     // TODO Bag system
     //private Bag bag = null;
-    
+
+
+    // sound state
+    public AudioSource sound_attacked;
+    public AudioSource sound_attack;
+    public AudioSource sound_run;
+    public AudioSource sound_jump;
+    public AudioSource sound_skill;
+
     void Start()
     {
         //gameObject.AddComponent<AI_Random>();
@@ -81,6 +92,8 @@ public class Hero : MonoBehaviour
 
         attack_state = new Vector2Int(0, 0);
 
+
+        // add default weapon
         var obj = Instantiate(GameObject.Find("Weapon"));
         obj.layer = LayerMask.NameToLayer("Weapon");
         var fist = obj.AddComponent<Fist>();
@@ -89,14 +102,29 @@ public class Hero : MonoBehaviour
         weapon[1] = weapon[0];
         obj.transform.parent = gameObject.transform;
         obj.transform.position = obj.transform.parent.position;
-    }
 
-    public void set_type(string s) {
+        for (int i = 0; i < 5; i++)
+            gameObject.AddComponent<AudioSource>();
+        var sounds = gameObject.GetComponents<AudioSource>();
+        sound_attack = sounds[0];
+        sound_run = sounds[1];
+        sound_jump = sounds[2];
+        sound_skill = sounds[3];
+        sound_attacked = sounds[4];
+        Debug.Log(sound_attack);
+        inited = true;
+    }
+    IEnumerator wait_for_start(string s) {
+        yield return new WaitUntil(() => inited == true);
+        Debug.Log(inited);
         type = s;
-        if (s == "enemy") {
+        if (s == "enemy")
+        {
             gameObject.AddComponent<AI_Random>();
+            set_layers("Enemy");
         }
-        if (s == "hero") {
+        if (s == "hero")
+        {
             jumpV1 = 8;
             jumpV2 = 6;
             jumpLimit = 1;
@@ -105,16 +133,44 @@ public class Hero : MonoBehaviour
             //anim.runtimeAnimatorController = (RuntimeAnimatorController)Resources.Load("Assets/Sprites/stickman/Hero.controller");
             attack_layer = LayerMask.GetMask("Enemy");
             ob_layer = LayerMask.GetMask("Enemy", "Wall");
+            set_layers("Player");
+            sound_run.clip = Resources.Load<AudioClip>("music/stickman/run");
+            sound_run.volume = 0.6f;
+            sound_run.loop = true;
+            
+            sound_attack.clip = Resources.Load<AudioClip>("music/stickman/attack");
+            sound_attack.volume = 0.4f;
+            sound_attack.loop = false;
+            
+
         }
-        if (s == "enemy_test") {
+        if (s == "enemy_test")
+        {
             jumpV1 = 8;
             jumpV2 = 6;
             jumpLimit = 1;
-            move_v = 3; 
+            move_v = 3;
             attack_layer = LayerMask.GetMask("Player");
             ob_layer = LayerMask.GetMask("Player", "Wall");
+            set_layers("Enemy");
         }
+
     }
+
+    public void set_type(string s) {
+        StartCoroutine(wait_for_start(s));
+    }
+
+    void set_layers(string s) {
+        int target = LayerMask.NameToLayer(s);
+        foreach (Transform tran in GetComponentsInChildren<Transform>())
+        {//遍历当前物体及其所有子物体
+            tran.gameObject.layer = target;//更改物体的Layer层
+        }
+
+    }
+
+
     // Update is called once per frame
     void Update()
     {
@@ -129,6 +185,29 @@ public class Hero : MonoBehaviour
         if (type == "hero") background_update();
 
         animate_update();
+
+        sound_update();
+    }
+
+    void sound_update() {
+        if (ground == 1 && move == 1 && attacked == 0) {
+            if (sound_run.isPlaying == false)
+            {
+                sound_run.Play();
+            }
+        }
+        if ((move == 0 || ground == 0 || control_flag > 0 || attacked > 0) && sound_run.isPlaying == true) {
+            sound_run.Stop();
+        }
+        /*
+        if (hitted == 1) {
+            sounds.clip = attacked_clip;
+            sounds.loop = false;
+            sounds.Play();
+        }
+        */
+        //if (attacked > 0)
+
     }
 
     void control_update() {
@@ -141,13 +220,14 @@ public class Hero : MonoBehaviour
     public void receive_force(Vector3 vec, int control_time) {
         if (hard == 0) {
             force_list.Add(vec);
-            Debug.Log("receive force " + vec.ToString());
+            hitted = 1;
+            //Debug.Log("receive force " + vec.ToString());
             if (control_flag != -1) {
                 if (control_flag == 0) {
                     control_end_time = Time.time;
                     control_flag = 1;
                 }
-                control_end_time += control_time / 60.0f;
+                control_end_time = Mathf.Max(control_end_time, Time.time + (control_time / 60.0f));
             }
         }
     }
@@ -233,7 +313,7 @@ public class Hero : MonoBehaviour
         } else {
             foreach (var force in force_list) {
                 body.velocity += force;
-                Debug.Log("add force" + force.ToString());
+                //Debug.Log("add force" + force.ToString());
             }
         }
         force_list.Clear();
@@ -296,11 +376,13 @@ public class Hero : MonoBehaviour
     void attack_update() {
         // 0 : 无攻击 1: 前摇(受击打断)  2：攻击判定 3：攻击后摇(受击打断/技能打断) 4：combo等待期
         if (attacked > 0) attacked--;
+        //Debug.Log(Time.time.ToString() + attack_state);
         if (attack_signal > 0 && active_weapon == 0 && weapon[attack_signal - 1] != null)
         {
             active_weapon = attack_signal;
-            attacked = 20;
+            attacked = Attack_Signal_Last_Time;
             attack_mode = weapon[active_weapon - 1].mode;
+            sound_attack.Play();
         }
         if (active_weapon != 0)
         {
