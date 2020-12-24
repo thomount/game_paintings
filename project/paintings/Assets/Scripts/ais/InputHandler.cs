@@ -12,13 +12,17 @@ public class InputHandler : MonoBehaviour
     public int jump_limit = 2;
     */
     // Start is called before the first frame update
+    Role role = null;
     void Start()
     {
+        role = GetComponent<Role>();
+        //Debug.Log(gameObject.name);
     }
 
     // Update is called once per frame
     void Update()
     {
+        if (role == null) return;
         /*
         if (Input.GetKey(KeyCode.LeftArrow)) {
             Debug.Log("Left");
@@ -45,21 +49,21 @@ public class InputHandler : MonoBehaviour
         if (Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.A))
         {
             //Debug.Log("Left");
-            GameObject.Find("MainHero").GetComponent<Hero>().Move(-1);
+            role.Move(-1);
         }
 
         if (Input.GetKey(KeyCode.RightArrow) || Input.GetKey(KeyCode.D))
         {
             //Debug.Log("Right");
-            GameObject.Find("MainHero").GetComponent<Hero>().Move(1);
+            role.Move(1);
         }
         if (Input.GetKey(KeyCode.UpArrow) || Input.GetKey(KeyCode.Space))
         {
             //Debug.Log("Up");
-            GameObject.Find("MainHero").GetComponent<Hero>().Jump(true);
+            role.Jump(true);
         } else
         {
-            GameObject.Find("MainHero").GetComponent<Hero>().Jump(false);
+            role.Jump(false);
         }
         if (Input.GetKey(KeyCode.DownArrow))
         {
@@ -68,10 +72,10 @@ public class InputHandler : MonoBehaviour
 
 
         if (Input.GetKey(KeyCode.J)) {
-            GameObject.Find("MainHero").GetComponent<Hero>().Attack(0);
+            role.Attack(0);
         }
         if (Input.GetKey(KeyCode.K)) {
-            GameObject.Find("MainHero").GetComponent<Hero>().Attack(1);
+            role.Attack(1);
         }
     }
 }

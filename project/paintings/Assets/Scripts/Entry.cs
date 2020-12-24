@@ -12,14 +12,16 @@ public class Entry : MonoBehaviour
         var hero_model = Resources.Load<GameObject>("stickman/Hero");
         //Debug.Log(hero_model);
         var hero = Instantiate(hero_model);
-        //hero.layer = LayerMask.NameToLayer("Player");
         hero.AddComponent<Hero>();
-        hero.GetComponent<Hero>().set_type("hero");
+        //hero.layer = LayerMask.NameToLayer("Player");
         hero.name = "MainHero";      
-        
+        //hero.GetComponent<Role>().set_type("hero");
+
         
         gameObject.AddComponent<MapLoader>();
-        gameObject.AddComponent<InputHandler>();
+        var gui = gameObject.transform.GetChild(0).gameObject.AddComponent<mainGUI>();
+        gui.init();
+        //gameObject.AddComponent<InputHandler>();
         //Debug.Log(LayerMask.GetMask("wall"));
     }
 
