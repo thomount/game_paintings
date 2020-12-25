@@ -17,6 +17,7 @@ public class MapContainer : MonoBehaviour
         hero = GameObject.Find("MainHero");
         //Debug.Log(transform.position);
         Vector2 hero_offset = new Vector2(0,0);
+        /*
         if (s == "random") {
             var cube_num = 200;
             int bound_left = -40, bound_right = 40, bound_down = -20, bound_up = 20;
@@ -28,7 +29,7 @@ public class MapContainer : MonoBehaviour
             }  
             
         }
-
+        */
         if (s == "main_menu") {
             var plat_len = 5;
             hero_offset = new Vector2(0, 3);
@@ -55,7 +56,7 @@ public class MapContainer : MonoBehaviour
 
             foreach (Vector2 off in Plat_off)
             {
-                GameObject cube_source = Resources.Load<GameObject>("others/Cube");
+                GameObject cube_source = Resources.Load<GameObject>("map/Cube");
                 GameObject cube_clone = Instantiate<GameObject>(cube_source);
                 cube_clone.transform.position = size / 2 + off;
                 cube_clone.transform.localScale = size;

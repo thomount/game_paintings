@@ -47,7 +47,7 @@ public class Test : Role
         stat.mtk_raw = 10;
         stat.Init();
 
-        var _bar = Instantiate<GameObject>(Resources.Load<GameObject>("others/BloodBar"));
+        var _bar = Instantiate(Resources.Load<GameObject>("guis/BloodBar"));
         var offset = new Vector3(-0.8f, 1.5f, 0);
         _bar.transform.localScale = new Vector3(1.6f/8, 0.2f/8, 1);
         filled = _bar.transform.GetChild(0).gameObject.transform;

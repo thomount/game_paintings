@@ -5,9 +5,11 @@ using UnityEngine;
 public class MagicDamage : Buff
 {
     private float value;
-    public MagicDamage(int _v, Role _r) : base(_r, -1)
+    private int crt = 0;
+    public MagicDamage(int _v, int _c, Role _r) : base(_r, -1)
     {
         value = _v;
+        crt = _c;
     }
 
     protected override void effect()
@@ -19,5 +21,6 @@ public class MagicDamage : Buff
         owner.shield -= stop;
         owner.hp -= dmg;
         Debug.Log(owner.hp.ToString()+ "Magic");
+        DamageEffect.create(1, Mathf.FloorToInt(dmg), crt, owner.gameObject.transform.position);
     }
 }

@@ -77,5 +77,21 @@ public class InputHandler : MonoBehaviour
         if (Input.GetKey(KeyCode.K)) {
             role.Attack(1);
         }
+        if (Input.GetKey(KeyCode.U)) {
+            role.use_skill(0);
+        }
+        if (Input.GetKey(KeyCode.I))
+        {
+            role.use_skill(1);
+        }
+        if (Input.GetKey(KeyCode.O))
+        {
+            role.use_skill(2);
+
+        }
+        if (Input.GetKey(KeyCode.P))
+        {
+            role.use_skill(3);
+        }
     }
 }

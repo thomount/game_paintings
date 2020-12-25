@@ -94,7 +94,6 @@ public class Status : MonoBehaviour
     void FixedUpdate()
     {
         if (owner == null || init_finish == 0 || alive == 0) return;  //未初始化完成/死了
-        // TODO
         // raw (ability)
 
         hp_max = (hp_raw + buster * buster_to_hp);

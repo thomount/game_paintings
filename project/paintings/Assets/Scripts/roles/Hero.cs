@@ -46,6 +46,12 @@ public class Hero : Role
         stat.atk_raw = 10;
         stat.mtk_raw = 10;
         stat.Init();
+
+        skill[0] = gameObject.AddComponent<Heal>();
+        skill[0].init(this, stat, 0);
+        skill[1] = gameObject.AddComponent<Fireball>();
+        skill[1].init(this, stat, 0);
+
     }   
 
     // Update is called once per frame

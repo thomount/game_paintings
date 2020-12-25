@@ -11,62 +11,66 @@ public class Role : MonoBehaviour
 
 
     // body state
-    protected Rigidbody2D body;
-    protected Collider2D cld;
+    public Rigidbody2D body;
+    public Collider2D cld;
     public int facing = 1;
 
     // Jump const
-    protected int jumpCount = 0;
-    protected float jumpV1;
-    protected float jumpV2;
-    protected float move_v;
-    protected int jumpLimit;
+    public int jumpCount = 0;
+    public float jumpV1;
+    public float jumpV2;
+    public float move_v;
+    public int jumpLimit;
 
     // jump state
-    protected int jumpState = 0;
-    protected bool lastjumpState = false;
+    public int jumpState = 0;
+    public bool lastjumpState = false;
 
     // Move data
-    protected int moved = 0;
-    protected float inertia;
-    protected float move_signal = 0;
+    public int moved = 0;
+    public float inertia;
+    public float move_signal = 0;
 
     // animate state
-    protected Animator anim;
-    protected int move = 0;
-    protected int ground = 1;
-    protected int control_flag = 0;
-    protected float control_end_time = 0;
-    protected int attacked = 0;       // 攻击开始信号
-    protected int attack_mode = 0;    // 攻击模式
-    protected int skill = 0;          // 技能时间
-    protected int hard = 0;           // 霸体时间
+    public Animator anim;
+    public int move = 0;
+    public int ground = 1;
+    public int control_flag = 0;
+    public float control_end_time = 0;
+    public int attacked = 0;       // 攻击开始信号
+    public int attack_mode = 0;    // 攻击模式
+    public int skill_state = 0;          // 技能时间
+    public int hard = 0;           // 霸体时间
 
     // weapon state
     public Weapon[] weapon = new Weapon[2];
 
+    // Skill State
+    public Skill[] skill = new Skill[4];
+    public int skill_type = -1;
+
     // attack state
     public int Attack_Signal_Last_Time = 20;
-    protected Vector2Int attack_state;
-    protected int attack_signal = 0;
-    protected int combo_last_time = 0;
-    protected int combos = 0;
-    protected int active_weapon = 0;
-    protected int hitted = 0;
+    public Vector2Int attack_state;
+    public int attack_signal = 0;
+    public int combo_last_time = 0;
+    public int combos = 0;
+    public int active_weapon = 0;
+    public int hitted = 0;
 
-    protected LayerMask attack_layer = 0;
-    protected LayerMask ob_layer = 0;
+    public LayerMask attack_layer = 0;
+    public LayerMask ob_layer = 0;
 
-    protected List<Vector2> force_list;
-    protected float resist = 1;             //控制抵抗率
+    public List<Vector2> force_list;
+    public float resist = 1;             //控制抵抗率
     // Start is called before the first frame update
 
 
     // basic state
-    protected string type;
+    public string type;
     public bool inited = false;
     // TODO Bag system
-    //protected Bag bag = null;
+    //public Bag bag = null;
     public Status stat;
 
 
@@ -79,7 +83,7 @@ public class Role : MonoBehaviour
 
 
     // bar
-    protected Transform bar = null;
+    public Transform bar = null;
 
     protected virtual void Start()
     {
@@ -112,6 +116,7 @@ public class Role : MonoBehaviour
         inited = true;
 
         stat = gameObject.AddComponent<Status>();
+        for (int i = 0; i < 4; i++) skill[i] = null;
     }
     /*
     IEnumerator wait_for_start(string s) {
@@ -161,7 +166,7 @@ public class Role : MonoBehaviour
         StartCoroutine(wait_for_start(s));
     }
     */
-    protected void set_layers(string s) {
+    public void set_layers(string s) {
         int target = LayerMask.NameToLayer(s);
         foreach (Transform tran in GetComponentsInChildren<Transform>())
         {//遍历当前物体及其所有子物体
@@ -176,6 +181,8 @@ public class Role : MonoBehaviour
     {
         control_update();
 
+        skill_update();
+
         attack_update();
 
         move_update();
@@ -186,7 +193,7 @@ public class Role : MonoBehaviour
 
         sound_update();
     }
-    protected void sound_update() {
+    public void sound_update() {
         if (ground == 1 && move == 1 && attacked == 0) {
             if (sound_run.isPlaying == false)
             {
@@ -206,7 +213,7 @@ public class Role : MonoBehaviour
         //if (attacked > 0)
 
     }
-    protected void control_update() {
+    public void control_update() {
         if (control_flag == 1) {
             if (Time.time > control_end_time) control_flag = 0;
         }
@@ -251,7 +258,7 @@ public class Role : MonoBehaviour
 
         Destroy(this);
     }
-    protected void background_update() {
+    public void background_update() {
         // camera and scenery follow
         var pos = this.transform.position;
         var st_pos = GameObject.Find("Main Camera").transform.position;
@@ -260,16 +267,16 @@ public class Role : MonoBehaviour
         GameObject.Find("Main Camera").transform.Translate(dpos);
         GameObject.Find("scenery").transform.Translate(dpos * scene_k);
         //GameObject.Find("HeadLight").transform.position = this.transform.position + new Vector3(0, 0, -5);
- 
+
     }
 
-    protected void ground_update() {
+    public void ground_update() {
 
         // ground check
         var hit = Physics2D.Raycast(transform.position, new Vector2(0, -1), 10f, ob_layer);
-            //Debug.Log(hit.collider);
-            //Debug.Log(hit.distance);
-        if (hit.collider != null && hit.distance < (transform.position - (cld.bounds.center - cld.bounds.extents)).y+0.05)
+        //Debug.Log(hit.collider);
+        //Debug.Log(hit.distance);
+        if (hit.collider != null && hit.distance < (transform.position - (cld.bounds.center - cld.bounds.extents)).y + 0.05)
         {
             //Debug.Log("Ground");
             jumpCount = 0;
@@ -283,18 +290,20 @@ public class Role : MonoBehaviour
 
     }
 
-    protected void animate_update() {
+    public void animate_update() {
         // animator update
         anim.SetInteger("ground", ground);
         anim.SetInteger("move", move);
         anim.SetInteger("control", control_flag);
         anim.SetInteger("attack", Mathf.Min(1, attacked));
-        anim.SetInteger("attack_mode",attack_mode);
+        anim.SetInteger("attack_mode", attack_mode);
+        anim.SetInteger("skill", skill_state);
+        anim.SetInteger("skill_mode", skill_type);
         //Debug.Log("attack = " + attacked.ToString() + " mode = " + attack_mode.ToString());
         //Debug.Log("ground = " + ground.ToString() + " move = " + move.ToString());
     }
 
-    protected void move_update() {
+    public void move_update() {
         float x = move_signal;
         if (control_flag == 0) {
             move = (Mathf.Abs(move_signal) > move_v * 0.2f) ? 1 : 0;
@@ -353,7 +362,7 @@ public class Role : MonoBehaviour
                 flip();
             }
         }
-        move_signal = body.velocity.x*0.7f;
+        move_signal = body.velocity.x * 0.7f;
         force_list.Clear();
 
         // facing update
@@ -362,7 +371,7 @@ public class Role : MonoBehaviour
 
     // actions
     public void Move(int flag) {
-        if (control_flag == 0 && attack_state.x == 0)
+        if (control_flag == 0 && attack_state.x == 0 && skill_state == 0)
             move_signal = move_v * flag;
     }
 
@@ -388,7 +397,7 @@ public class Role : MonoBehaviour
         {
 
         }
-        else if (todo == 2) 
+        else if (todo == 2)
         {
             jumpState = 0;
             body.velocity = new Vector2(body.velocity.x, Mathf.Min(0, body.velocity.y));
@@ -400,7 +409,7 @@ public class Role : MonoBehaviour
         Vector3 t = transform.localScale;
         t.x *= -1;
         transform.localScale = t;
-        if (bar != null) { 
+        if (bar != null) {
             var ft = bar.localScale;
             ft.x *= -1;
             var offset = bar.position - transform.position;
@@ -414,12 +423,20 @@ public class Role : MonoBehaviour
         attack_signal = side + 1;
     }
 
-    protected void attack_update() {
+    public void attack_update() {
         // 0 : 无攻击 1: 前摇(受击打断)  2：攻击判定 3：攻击后摇(受击打断/技能打断) 4：combo等待期
         if (attacked > 0) attacked--;
-        //Debug.Log(Time.time.ToString() + attack_state);
-        if (attack_signal > 0 && active_weapon == 0 && weapon[attack_signal - 1] != null)
+        if (control_flag > 0)               //控制技能打断攻击
         {
+            attack_state = new Vector2Int(0, 0);
+            active_weapon = 0;
+            attack_mode = 0;
+        }
+        if (control_flag > 0) { attack_signal = 0; return; }
+        //Debug.Log(Time.time.ToString() + attack_state);
+        if (attack_signal > 0 && active_weapon == 0 && weapon[attack_signal - 1] != null && (skill_state != 1 && skill_state != 2))
+        {
+            stop_skill();
             active_weapon = attack_signal;
             attacked = Attack_Signal_Last_Time;
             attack_mode = weapon[active_weapon - 1].mode;
@@ -431,7 +448,7 @@ public class Role : MonoBehaviour
                 //Debug.Log("hiting");
                 weapon[active_weapon - 1].get_hit(attack_layer);
             }
-            attack_state = weapon[active_weapon-1].next_Attack(attack_state);
+            attack_state = weapon[active_weapon - 1].next_Attack(attack_state);
             // TODO finish attack logic
 
         }
@@ -493,5 +510,22 @@ public class Role : MonoBehaviour
         */
     }
 
+
+    public virtual void skill_update() {
+        //skill_state = 0 未使用 1 前摇 2 释放中 3 后摇
+        skill_state = 0;
+        for (int i = 0; i < 4; i++) if (skill[i] != null && skill[i].isUsing() == true) {
+                skill_state = skill[i].get_state();
+                skill_type = skill[i].type;
+        }
+    }
+
+    public virtual void use_skill(int id) {
+        if (skill[id] == null) return;
+        skill[id].use();
+    }
+    public void stop_skill() {
+        for (int i = 0; i < 4; i++) if (skill[i] != null && skill[i].isUsing() == true) { skill[i].kill(); }
+    }
 
 }

@@ -84,8 +84,8 @@ public class Weapon : CollectiveItem
         Role role = enemy.GetComponent<Role>();
         role.receive_force(act_force, control_time);
         Debug.Log(owner.name + " hit " + enemy.name);
-        if (ret[0] > 0) role.stat.AddBuff(new PhysicsDamage(ret[0], role));
-        if (ret[1] > 0) role.stat.AddBuff(new MagicDamage(ret[1], role));
+        if (ret[0] > 0) role.stat.AddBuff(new PhysicsDamage(ret[0], 0, role));
+        if (ret[1] > 0) role.stat.AddBuff(new MagicDamage(ret[1], 0, role));
     }
 
     public void get_effect() {

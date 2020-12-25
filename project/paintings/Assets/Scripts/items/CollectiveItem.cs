@@ -5,6 +5,8 @@ using UnityEngine;
 public class CollectiveItem : MonoBehaviour
 {
     // Start is called before the first frame update
+    public Texture2D icon = null;
+
     protected virtual void Start()
     {
         
