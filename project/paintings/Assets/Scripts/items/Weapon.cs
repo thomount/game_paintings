@@ -14,6 +14,7 @@ public class Weapon : CollectiveItem
     public Vector2 force;
     public int control_time = 0;
     public AudioSource sounds;
+    public float PhK, MgK, DmgType;     //伤害分配和呈现
     // Start is called before the first frame update
     protected override void Start()
     {
@@ -75,17 +76,20 @@ public class Weapon : CollectiveItem
 
     void get_damage(GameObject enemy) {
         // TODO calculate the damage
-        var ret = new List<int>(2);
-        ret.Add(attP);
-        ret.Add(attM);
+        int dmg = Mathf.FloorToInt((attP + owner.stat.atk) * PhK + (attM + owner.stat.mtk) * MgK);
+        int isCrt = 0;
+        if (Random.Range(0, 1f) < owner.stat.crt) {
+            dmg = Mathf.FloorToInt(dmg*(1 + owner.stat.crt_dmg));
+            isCrt = 1;
+        }
         //Debug.Log("attacking " +enemy.name);
         var act_force = force;
         act_force.x *= owner.facing;
         Role role = enemy.GetComponent<Role>();
         role.receive_force(act_force, control_time);
         Debug.Log(owner.name + " hit " + enemy.name);
-        if (ret[0] > 0) role.stat.AddBuff(new PhysicsDamage(ret[0], 0, role));
-        if (ret[1] > 0) role.stat.AddBuff(new MagicDamage(ret[1], 0, role));
+        if (DmgType == 1) role.stat.AddBuff(new PhysicsDamage(dmg, isCrt, role));
+        if (DmgType == 2) role.stat.AddBuff(new MagicDamage(dmg, isCrt, role));
     }
 
     public void get_effect() {

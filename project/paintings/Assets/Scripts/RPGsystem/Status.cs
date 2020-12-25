@@ -58,7 +58,7 @@ public class Status : MonoBehaviour
     public float ph_im = 1;     //物理免伤
     public float mg_im = 1;     //法术免伤
     public float im = 1;        //免伤
-    public float crt = 0;       //暴击
+    public float crt = 0.05f;       //暴击
     public float crt_dmg = 1;   //爆伤
     public float shield = 0;      //护盾
     public int hard = 0;        //霸体

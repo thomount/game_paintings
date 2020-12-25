@@ -41,6 +41,7 @@ public class Role : MonoBehaviour
     public int attack_mode = 0;    // 攻击模式
     public int skill_state = 0;          // 技能时间
     public int hard = 0;           // 霸体时间
+    public int death_time = 3;
 
     // weapon state
     public Weapon[] weapon = new Weapon[2];
@@ -194,6 +195,7 @@ public class Role : MonoBehaviour
         sound_update();
     }
     public void sound_update() {
+        if (control_flag == -1) return;
         if (ground == 1 && move == 1 && attacked == 0) {
             if (sound_run.isPlaying == false)
             {
@@ -237,13 +239,17 @@ public class Role : MonoBehaviour
 
     public void dead() {
         control_flag = -1;
+        anim.SetTrigger("die");
         stat.alive = 0;
 
         // Delete Role
+        Destroy(bar.gameObject);
+        /*
         for (int i = 0; i < transform.childCount; i++)
         {
-            Destroy(transform.GetChild(i).gameObject);
+            Destroy(transform.GetChild(i).gameObject, death_time);
         }
+        */
         List<Component> comList = new List<Component>();
         foreach (var component in gameObject.GetComponents<Component>())
         {
@@ -253,12 +259,12 @@ public class Role : MonoBehaviour
         }
         foreach (Component item in comList)
         {
-            Destroy(item);
+            Destroy(item, death_time);
         }
-
-        Destroy(this);
+        //Destroy(this, death_time);
     }
     public void background_update() {
+        if (control_flag == -1) return;
         // camera and scenery follow
         var pos = this.transform.position;
         var st_pos = GameObject.Find("Main Camera").transform.position;
@@ -292,10 +298,11 @@ public class Role : MonoBehaviour
 
     public void animate_update() {
         // animator update
+       
         anim.SetInteger("ground", ground);
         anim.SetInteger("move", move);
         anim.SetInteger("control", control_flag);
-        anim.SetInteger("attack", Mathf.Min(1, attacked));
+        anim.SetInteger("attack", attack_state.x);
         anim.SetInteger("attack_mode", attack_mode);
         anim.SetInteger("skill", skill_state);
         anim.SetInteger("skill_mode", skill_type);
@@ -371,11 +378,13 @@ public class Role : MonoBehaviour
 
     // actions
     public void Move(int flag) {
+        if (control_flag == -1) return;
         if (control_flag == 0 && attack_state.x == 0 && skill_state == 0)
             move_signal = move_v * flag;
     }
 
     public void Jump(bool state) {
+        if (control_flag == -1) return;
         //Debug.Log("jump");
         int todo = 2;   // 0 for start jump 1 for keep jump 2 for no jump
         if (state == true)
@@ -420,10 +429,12 @@ public class Role : MonoBehaviour
     }
 
     public void Attack(int side) {
+        if (control_flag == -1) return;
         attack_signal = side + 1;
     }
 
     public void attack_update() {
+        if (control_flag == -1) return;
         // 0 : 无攻击 1: 前摇(受击打断)  2：攻击判定 3：攻击后摇(受击打断/技能打断) 4：combo等待期
         if (attacked > 0) attacked--;
         if (control_flag > 0)               //控制技能打断攻击
@@ -512,8 +523,11 @@ public class Role : MonoBehaviour
 
 
     public virtual void skill_update() {
+        if (control_flag == -1) return;
         //skill_state = 0 未使用 1 前摇 2 释放中 3 后摇
+        if (control_flag != 0) stop_skill();
         skill_state = 0;
+        skill_type = 0;
         for (int i = 0; i < 4; i++) if (skill[i] != null && skill[i].isUsing() == true) {
                 skill_state = skill[i].get_state();
                 skill_type = skill[i].type;
@@ -521,10 +535,12 @@ public class Role : MonoBehaviour
     }
 
     public virtual void use_skill(int id) {
+        if (control_flag == -1) return;
         if (skill[id] == null) return;
         skill[id].use();
     }
     public void stop_skill() {
+        if (control_flag == -1) return;
         for (int i = 0; i < 4; i++) if (skill[i] != null && skill[i].isUsing() == true) { skill[i].kill(); }
     }
 

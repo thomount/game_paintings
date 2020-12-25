@@ -25,6 +25,11 @@ public class Fist : Weapon
         sounds.clip = Resources.Load<AudioClip>("music/weapons/fist");
         sounds.loop = false;
         sounds.volume = 0.3f;
+
+        PhK = 1;
+        MgK = 0;
+        
+        DmgType = 1;
         
     }
 
@@ -57,4 +62,10 @@ public class Fist : Weapon
         }
         return new Vector2Int(0, 0);
     }
+
+    public override void passive_effect()
+    {
+        owner.stat.crt += 0.2f;
+    }
+
 }
