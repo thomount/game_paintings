@@ -47,7 +47,7 @@ public class Role : MonoBehaviour
     public Weapon[] weapon = new Weapon[2];
 
     // Skill State
-    public Skill[] skill = new Skill[4];
+    public Skill[] skill = new Skill[10];
     public int skill_type = -1;
 
     // attack state
@@ -117,7 +117,7 @@ public class Role : MonoBehaviour
         inited = true;
 
         stat = gameObject.AddComponent<Status>();
-        for (int i = 0; i < 4; i++) skill[i] = null;
+        for (int i = 0; i < 10; i++) skill[i] = null;
     }
     /*
     IEnumerator wait_for_start(string s) {
@@ -535,6 +535,9 @@ public class Role : MonoBehaviour
     }
 
     public virtual void use_skill(int id) {
+        // 0,1,2,3 normal skills
+        // 4, 5 attacks
+        // 6, 7 roll, jump
         if (control_flag == -1) return;
         if (skill[id] == null) return;
         skill[id].use();

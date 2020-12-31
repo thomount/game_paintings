@@ -60,6 +60,7 @@ public class InputHandler : MonoBehaviour
         if (Input.GetKey(KeyCode.UpArrow) || Input.GetKey(KeyCode.Space))
         {
             //Debug.Log("Up");
+            role.use_skill(7);
             role.Jump(true);
         } else
         {
@@ -73,9 +74,11 @@ public class InputHandler : MonoBehaviour
 
         if (Input.GetKey(KeyCode.J)) {
             role.Attack(0);
+            role.use_skill(4);
         }
         if (Input.GetKey(KeyCode.K)) {
             role.Attack(1);
+            role.use_skill(5);
         }
         if (Input.GetKey(KeyCode.U)) {
             role.use_skill(0);
