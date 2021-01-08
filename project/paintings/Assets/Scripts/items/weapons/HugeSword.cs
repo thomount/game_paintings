@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Fist : Weapon
+public class HugeSword : Weapon
 {
     float last_record = 0;
 
@@ -18,29 +18,29 @@ public class Fist : Weapon
         mode = 1;   //徒手武器
         var obj = gameObject.AddComponent<BoxCollider2D>();
         obj.isTrigger = true;
-        obj.size = new Vector2(0.5f, 1.4f);
-        //obj.enabled = false;
-        offset = new Vector2(0.0f, 0);
-        force = new Vector2(2, 2);
-        control_time = 20;
-
-        sounds.clip = Resources.Load<AudioClip>("music/weapons/fist_h");
-        sounds.volume = 0.1f;
+        obj.size = new Vector2(2.0f, 2.4f);
+        obj.offset = new Vector2(0, -2);
+        obj.enabled = false;
+        force = new Vector2(5, 4);
+        control_time = 30;
+        // TODO change sound
+        sounds.clip = Resources.Load<AudioClip>("music/weapons/hugesword_h");
+        sounds.volume = 1f;
         //sounds.loop = false;
 
         sounds.loop = false;
-        render.sprite = Resources.Load<Sprite>("equips/hand");
-        icon_path = "equips/hand";
-        render.transform.localScale = new Vector3(0.5f, 0.5f, 1);
+        render.sprite = Resources.Load<Sprite>("equips/wp_golden_pen");
+        icon_path = "equips/wp_golden_pen";
+        render.transform.localScale = new Vector3(1f, 1f, 1);
         render.spriteSortPoint = SpriteSortPoint.Pivot;
         render.sortingOrder = 4;
 
 
-        PhK = 1;
+        PhK = 1.5f;
         MgK = 0;
-        
+
         DmgType = 1;
-        
+
     }
 
     // Update is called once per frame
@@ -76,17 +76,20 @@ public class Fist : Weapon
     */
     public override void passive_effect()
     {
-        owner.stat.crt += 0.05f;
+        //owner.stat.crt_dmg *= 1.5f;
+        owner.stat.crt += 0.3f;
     }
 
-    public override void onEquip(int _side) {
+    public override void onEquip(int _side)
+    {
         base.onEquip(_side);
-        owner.skill[4 + side] = owner.gameObject.AddComponent<a_fist>();
+        owner.skill[4 + side] = owner.gameObject.AddComponent<a_hugesword>();
         List<int> param = new List<int>();
         param.Add(side);
-        owner.skill[4 + side].init(owner, owner.stat, 0, 4+side, param);
+        owner.skill[4 + side].init(owner, owner.stat, 0, 4 + side, param);
     }
-    public override void unEquip() {
+    public override void unEquip()
+    {
         Destroy(owner.skill[4 + side]);
     }
 }

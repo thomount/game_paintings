@@ -56,6 +56,8 @@
     <Analyzer Include="C:\Program Files (x86)\Microsoft Visual Studio Tools for Unity\16.0\Analyzers\Microsoft.Unity.Analyzers.dll" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\Scripts\bullets\bullet_fireball.cs" />
+    <Compile Include="Assets\Scripts\items\skills\heal.cs" />
     <Compile Include="Assets\Scripts\items\weapons\Fist.cs" />
     <Compile Include="Assets\Scripts\Entry.cs" />
     <Compile Include="Assets\Scripts\tasks\Task.cs" />
@@ -66,25 +68,31 @@
     <Compile Include="Assets\Scripts\buffs\MagicDamage.cs" />
     <Compile Include="Assets\Scripts\tasks\TaskTrigger.cs" />
     <Compile Include="Assets\Scripts\items\Skill.cs" />
+    <Compile Include="Assets\Scripts\items\skills\a_fist.cs" />
     <Compile Include="Assets\Scripts\tasks\TaskTable.cs" />
+    <Compile Include="Assets\Scripts\buffs\HealBuff.cs" />
     <Compile Include="Assets\Scripts\RPGsystem\Role.cs" />
     <Compile Include="Assets\Scripts\roles\Test.cs" />
     <Compile Include="Assets\Scripts\RPGsystem\Bullet.cs" />
+    <Compile Include="Assets\Scripts\RPGsystem\BulletShooter.cs" />
     <Compile Include="Assets\Scripts\maps\MapContainer.cs" />
+    <Compile Include="Assets\Scripts\RPGsystem\MoveController.cs" />
+    <Compile Include="Assets\Scripts\items\skills\Fireball.cs" />
     <Compile Include="Assets\Scripts\buffs\PhysicsDamage.cs" />
     <Compile Include="Assets\Scripts\ais\InputHandler.cs" />
     <Compile Include="Assets\Scripts\GUIs\Demo.cs" />
+    <Compile Include="Assets\Scripts\effects\DamageEffect.cs" />
     <Compile Include="Assets\Scripts\RPGsystem\Buff.cs" />
     <Compile Include="Assets\Scripts\roles\Hero.cs" />
     <Compile Include="Assets\Scripts\items\OnceItem.cs" />
     <Compile Include="Assets\Scripts\RPGsystem\Status.cs" />
     <Compile Include="Assets\Scripts\items\CollectiveItem.cs" />
     <Compile Include="Assets\Scripts\maps\MapLoader.cs" />
-    <Compile Include="Assets\Scripts\effects\DamageEffect.cs" />
-    <Compile Include="Assets\Scripts\items\skills\heal.cs" />
-    <Compile Include="Assets\Scripts\items\skills\Fireball.cs" />
-    <Compile Include="Assets\Scripts\buffs\HealBuff.cs" />
-    <Compile Include="Assets\Scripts\RPGsystem\BulletShooter.cs" />
+    <Compile Include="Assets\Scripts\items\weapons\Sword.cs" />
+    <Compile Include="Assets\Scripts\items\skills\a_sword.cs" />
+    <Compile Include="Assets\Scripts\items\skills\Attack.cs" />
+    <Compile Include="Assets\Scripts\items\weapons\HugeSword.cs" />
+    <Compile Include="Assets\Scripts\items\skills\a_hugesword.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="UnityEngine">

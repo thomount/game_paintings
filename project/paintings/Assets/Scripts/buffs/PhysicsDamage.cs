@@ -20,7 +20,7 @@ public class PhysicsDamage : Buff
         dmg -= stop;
         owner.shield -= stop;
         owner.hp -= dmg;
-        Debug.Log(owner.hp.ToString() + "Physics");
+        //Debug.Log(owner.hp.ToString() + "Physics");
 
         DamageEffect.create(0, Mathf.FloorToInt(dmg), crt, owner.gameObject.transform.position);
     }

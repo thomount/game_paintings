@@ -54,6 +54,7 @@ public class MapContainer : MonoBehaviour
             */
             Vector2 size = new Vector2(5, 1);
 
+            int tot = 0;
             foreach (Vector2 off in Plat_off)
             {
                 GameObject cube_source = Resources.Load<GameObject>("map/Cube");
@@ -61,16 +62,21 @@ public class MapContainer : MonoBehaviour
                 cube_clone.transform.position = size / 2 + off;
                 cube_clone.transform.localScale = size;
                 cube_clone.transform.parent = transform;
+                cube_clone.name = "Cube" + tot.ToString();
+                tot += 1;
             }
 
             var base_hero = Resources.Load<GameObject>("stickman/Hero");
-            var enemy = Instantiate(base_hero);
-            enemy.transform.position = new Vector2(5, 6);
-            enemy.transform.parent = transform;
-            //enemy.layer = LayerMask.NameToLayer("Enemy");
-            enemy.AddComponent<Test>();
-            // TODO add role to enemy
-            enemy.name = "enemy";
+            for (int i = 0; i < 5; i++)
+            {
+                var enemy = Instantiate(base_hero);
+                enemy.transform.position = new Vector2(Random.Range(-7,7), Random.Range(6, 10));
+                enemy.transform.parent = transform;
+                //enemy.layer = LayerMask.NameToLayer("Enemy");
+                enemy.AddComponent<Test>();
+                enemy.name = "enemy"+i.ToString();
+            }
+
             MusicPlayer.clip = Resources.Load<AudioClip>("music/main_menu");
             //MusicPlayer.clip = Resources.Load<AudioClip>("music/stickman/run");
             MusicPlayer.loop = true;

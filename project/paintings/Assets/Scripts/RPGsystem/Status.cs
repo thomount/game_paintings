@@ -125,7 +125,7 @@ public class Status : MonoBehaviour
         
         for (int i = 0; i < buff_list.Count; i++) {
             buff_list[i].manual_update();
-            Debug.Log(buff_list[i].isOver());
+            //Debug.Log(buff_list[i].isOver());
             if (buff_list[i].isOver()) { buff_list.RemoveAt(i); }
             if (hp <= 0) owner.GetComponent<Role>().dead();
         }

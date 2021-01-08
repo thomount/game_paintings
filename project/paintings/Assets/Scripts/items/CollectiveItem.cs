@@ -18,6 +18,7 @@ public class CollectiveItem : MonoBehaviour
         
     }
 
-    public virtual void use() { 
+    public virtual bool use() {
+        return false;
     }
 }

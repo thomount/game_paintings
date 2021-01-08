@@ -14,11 +14,14 @@ public class Weapon : CollectiveItem
     public Vector2 force;
     public int control_time = 0;
     public AudioSource sounds;
+    public SpriteRenderer render;
     public float PhK, MgK, DmgType;     //伤害分配和呈现
+    public int side = -1;
+    public string icon_path = null;
     // Start is called before the first frame update
     protected override void Start()
     {
-        
+        render = gameObject.GetComponent<SpriteRenderer>();
     }
 
     // Update is called once per frame
@@ -40,9 +43,10 @@ public class Weapon : CollectiveItem
     }
     
     // 攻击判定区域对象
-    public void get_hit(int mask) {
+    public virtual void get_hit(int mask) {
         var obj = gameObject.GetComponent<Collider2D>();
-        obj.offset = offset;
+        obj.enabled = true;
+        //obj.offset = offset;
         //Debug.Log(obj.offset.ToString()+owner.facing.ToString()+(obj.bounds.center - obj.transform.position).ToString());
         var filter = new ContactFilter2D();
         filter.SetLayerMask(mask);
@@ -58,24 +62,25 @@ public class Weapon : CollectiveItem
         {
             Debug.Log("Miss" + obj.bounds.center.ToString());
             
-            var cube = Instantiate(GameObject.Find("Cube"));
+            var cube = Instantiate(Resources.Load<GameObject>("map/Cube"));
             cube.name = "hitting place";
             cube.GetComponent<Collider2D>().isTrigger = true;
             cube.transform.position = obj.bounds.center;
             cube.transform.localScale = 2 * obj.bounds.extents;
             cube.layer = LayerMask.NameToLayer("Player");
-            
+            Destroy(cube, 5);
         }
         */
         if (cds.Count > 0) get_effect();
         foreach (var cd in cds) {
             get_damage(cd.gameObject);
         }
-        obj.offset = new Vector2(0, 0);
+        //obj.offset = new Vector2(0, 0);
+        obj.enabled = false;
     }
 
     void get_damage(GameObject enemy) {
-        // TODO calculate the damage
+        // calculate the damage
         int dmg = Mathf.FloorToInt((attP + owner.stat.atk) * PhK + (attM + owner.stat.mtk) * MgK);
         int isCrt = 0;
         if (Random.Range(0, 1f) < owner.stat.crt) {
@@ -101,6 +106,13 @@ public class Weapon : CollectiveItem
     // 更新status
     public virtual void passive_effect() { 
         
+    }
+    public virtual void onEquip(int _side) {
+        side = _side;
+        if (owner.skill[4 + side] != null)
+            Destroy(owner.skill[4 + side]);
+    }
+    public virtual void unEquip() { 
     }
 
 }

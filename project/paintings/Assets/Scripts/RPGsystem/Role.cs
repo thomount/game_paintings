@@ -40,23 +40,18 @@ public class Role : MonoBehaviour
     public int attacked = 0;       // 攻击开始信号
     public int attack_mode = 0;    // 攻击模式
     public int skill_state = 0;          // 技能时间
+    public int skill_now = -1;
     public int hard = 0;           // 霸体时间
     public int death_time = 3;
 
     // weapon state
     public Weapon[] weapon = new Weapon[2];
+    public GameObject wObj_L, wObj_R;
 
     // Skill State
     public Skill[] skill = new Skill[10];
     public int skill_type = -1;
 
-    // attack state
-    public int Attack_Signal_Last_Time = 20;
-    public Vector2Int attack_state;
-    public int attack_signal = 0;
-    public int combo_last_time = 0;
-    public int combos = 0;
-    public int active_weapon = 0;
     public int hitted = 0;
 
     public LayerMask attack_layer = 0;
@@ -77,10 +72,9 @@ public class Role : MonoBehaviour
 
     // sound state
     public AudioSource sound_attacked;
-    public AudioSource sound_attack;
     public AudioSource sound_run;
     public AudioSource sound_jump;
-    public AudioSource sound_skill;
+    public AudioSource[] sound_skill = new AudioSource[10];
 
 
     // bar
@@ -100,19 +94,16 @@ public class Role : MonoBehaviour
         control_flag = 0;
         anim = gameObject.GetComponent<Animator>();
 
-        attack_state = new Vector2Int(0, 0);
+        //attack_state = new Vector2Int(0, 0);
 
 
 
 
-        for (int i = 0; i < 5; i++)
-            gameObject.AddComponent<AudioSource>();
-        var sounds = gameObject.GetComponents<AudioSource>();
-        sound_attack = sounds[0];
-        sound_run = sounds[1];
-        sound_jump = sounds[2];
-        sound_skill = sounds[3];
-        sound_attacked = sounds[4];
+        sound_run = gameObject.AddComponent<AudioSource>();
+        sound_jump = gameObject.AddComponent<AudioSource>();
+        sound_attacked = gameObject.AddComponent<AudioSource>();
+        for (int i = 0; i < 10; i++)
+            sound_skill[i] = gameObject.AddComponent<AudioSource>(); 
         //Debug.Log(sound_attack);
         inited = true;
 
@@ -184,7 +175,7 @@ public class Role : MonoBehaviour
 
         skill_update();
 
-        attack_update();
+        //attack_update();
 
         move_update();
 
@@ -235,15 +226,17 @@ public class Role : MonoBehaviour
                 control_end_time = Mathf.Max(control_end_time, Time.time + (resist * control_time / 60.0f));
             }
         }
+        //if (control_flag != 0 && skill_now >= 0 && skill[skill_now] != null) skill[skill_now].kill();
     }
 
-    public void dead() {
+    public virtual void dead() {
         control_flag = -1;
         anim.SetTrigger("die");
         stat.alive = 0;
 
         // Delete Role
-        Destroy(bar.gameObject);
+        if (bar != null)
+            Destroy(bar.gameObject);
         /*
         for (int i = 0; i < transform.childCount; i++)
         {
@@ -254,6 +247,18 @@ public class Role : MonoBehaviour
         foreach (var component in gameObject.GetComponents<Component>())
         {
             if (component != transform)
+                comList.Add(component);
+
+        }
+        foreach (var component in wObj_L.GetComponents<Component>())
+        {
+            if (component != wObj_L.gameObject.transform)
+                comList.Add(component);
+
+        }
+        foreach (var component in wObj_R.GetComponents<Component>())
+        {
+            if (component != wObj_R.gameObject.transform)
                 comList.Add(component);
 
         }
@@ -302,8 +307,8 @@ public class Role : MonoBehaviour
         anim.SetInteger("ground", ground);
         anim.SetInteger("move", move);
         anim.SetInteger("control", control_flag);
-        anim.SetInteger("attack", attack_state.x);
-        anim.SetInteger("attack_mode", attack_mode);
+        //anim.SetInteger("attack", attack_state.x);
+        //anim.SetInteger("attack_mode", attack_mode);
         anim.SetInteger("skill", skill_state);
         anim.SetInteger("skill_mode", skill_type);
         //Debug.Log("attack = " + attacked.ToString() + " mode = " + attack_mode.ToString());
@@ -326,15 +331,15 @@ public class Role : MonoBehaviour
             {
                 //Debug.Log(cd.transform.position.x - this.transform.position.x);
                 float lim = cld.bounds.extents.x + cd.GetComponent<Collider2D>().bounds.extents.x - 0.05f;
-                if (cd.transform.position.x - this.transform.position.x > lim)
+                if (cd.transform.position.x - transform.position.x > lim)
                 {
                     hit_right = true;
-                    //Debug.Log(cd.gameObject.name);
+                    //Debug.Log(gameObject.name + ":" + cd.gameObject.name);
                 }
-                if (cd.transform.position.x - this.transform.position.x < -lim)
+                if (cd.transform.position.x - transform.position.x < -lim)
                 {
                     hit_left = true;
-                    //Debug.Log(cd.gameObject.name);
+                    //Debug.Log(gameObject.name + ":" + cd.gameObject.name);
                 }
             }
             if (hit_left) act_v = Mathf.Max(0, act_v);
@@ -342,20 +347,11 @@ public class Role : MonoBehaviour
             //Debug.Log(act_v);
             body.velocity = new Vector2(act_v, body.velocity.y);
             inertia = act_v;
-            if (attack_state.x == 0)
+
+            if (body.velocity.x * facing < 0)
             {
-                if (move_signal * facing < 0)
-                {
-                    facing = -facing;
-                    flip();
-                }
-            }
-            else {
-                if (body.velocity.x * facing < 0)
-                {
-                    facing = -facing;
-                    flip();
-                }
+                facing = -facing;
+                flip();
             }
             //if (moved > 0) moved --; else move_signal = 0;
         } else {
@@ -379,7 +375,7 @@ public class Role : MonoBehaviour
     // actions
     public void Move(int flag) {
         if (control_flag == -1) return;
-        if (control_flag == 0 && attack_state.x == 0 && skill_state == 0)
+        if (control_flag == 0 && skill_state == 0)
             move_signal = move_v * flag;
     }
 
@@ -429,10 +425,10 @@ public class Role : MonoBehaviour
     }
 
     public void Attack(int side) {
-        if (control_flag == -1) return;
-        attack_signal = side + 1;
+        use_skill(4+side);
     }
 
+    /*
     public void attack_update() {
         if (control_flag == -1) return;
         // 0 : 无攻击 1: 前摇(受击打断)  2：攻击判定 3：攻击后摇(受击打断/技能打断) 4：combo等待期
@@ -475,6 +471,7 @@ public class Role : MonoBehaviour
 
         attack_signal = 0;
     }
+    */
 
     public void equip_weapon(GameObject _weapon, int pos) {
         /*
@@ -528,18 +525,21 @@ public class Role : MonoBehaviour
         if (control_flag != 0) stop_skill();
         skill_state = 0;
         skill_type = 0;
-        for (int i = 0; i < 4; i++) if (skill[i] != null && skill[i].isUsing() == true) {
-                skill_state = skill[i].get_state();
-                skill_type = skill[i].type;
+        skill_now = -1;
+        for (int i = 0; i < 10; i++) if (skill[i] != null && skill[i].isUsing() == true) {
+            skill_state = skill[i].get_state();
+            skill_type = skill[i].type;
+            skill_now = i;
         }
     }
 
     public virtual void use_skill(int id) {
+        if (skill[id] == null) return;
+        if (control_flag != 0) return;
+        //Debug.Log(gameObject.name + " use skill " + id.ToString() + ": "+skill[id].canUse().ToString());
         // 0,1,2,3 normal skills
         // 4, 5 attacks
         // 6, 7 roll, jump
-        if (control_flag == -1) return;
-        if (skill[id] == null) return;
         skill[id].use();
     }
     public void stop_skill() {

@@ -12,10 +12,10 @@ public class InputHandler : MonoBehaviour
     public int jump_limit = 2;
     */
     // Start is called before the first frame update
-    Role role = null;
+    Hero role = null;
     void Start()
     {
-        role = GetComponent<Role>();
+        role = GetComponent<Hero>();
         //Debug.Log(gameObject.name);
     }
 
@@ -60,7 +60,7 @@ public class InputHandler : MonoBehaviour
         if (Input.GetKey(KeyCode.UpArrow) || Input.GetKey(KeyCode.Space))
         {
             //Debug.Log("Up");
-            role.use_skill(7);
+            //role.use_skill(7);
             role.Jump(true);
         } else
         {
@@ -73,12 +73,10 @@ public class InputHandler : MonoBehaviour
 
 
         if (Input.GetKey(KeyCode.J)) {
-            role.Attack(0);
-            role.use_skill(4);
+            role.Attack(0);           
         }
         if (Input.GetKey(KeyCode.K)) {
             role.Attack(1);
-            role.use_skill(5);
         }
         if (Input.GetKey(KeyCode.U)) {
             role.use_skill(0);
@@ -95,6 +93,23 @@ public class InputHandler : MonoBehaviour
         if (Input.GetKey(KeyCode.P))
         {
             role.use_skill(3);
+        }
+        /*
+        var dv = Input.GetAxis("Mouse ScrollWheel");
+        if (dv > 0.25f)
+        {
+            // 鼠标滚轮向上滚动
+            role.change_weapon();
+        }
+        else if (dv < -0.25f)
+        {
+            // 鼠标滚轮向下滚动
+            //role.change_weapon();
+        }
+        */
+        if (Input.GetKeyDown(KeyCode.H))
+        {
+            role.change_weapon();
         }
     }
 }

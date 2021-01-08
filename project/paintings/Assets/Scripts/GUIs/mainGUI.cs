@@ -7,7 +7,7 @@ public class mainGUI : MonoBehaviour
     // Start is called before the first frame update
     public Status stat = null;
     public Role role = null;
-    protected Texture2D blood, bar, dark_magic, light_magic, null_skill, shadow;
+    protected Texture2D blood, bar, dark_magic, light_magic, null_skill, shadow, weapon_back;
     int inited = 0;
     void Start()
     {
@@ -27,6 +27,7 @@ public class mainGUI : MonoBehaviour
         light_magic = Resources.Load<Texture2D>("guis/light_magic");
         null_skill = Resources.Load<Texture2D>("itemsIcon/none");
         shadow = Resources.Load<Texture2D>("itemsIcon/shadow");
+        weapon_back = Resources.Load<Texture2D>("guis/weapons_back");
 
         //Debug.Log("blood = " + blood.ToString());
         inited = 1;
@@ -45,7 +46,7 @@ public class mainGUI : MonoBehaviour
 
         // hp
         GUI.DrawTexture(new Rect(30, 30, stat.hp_max * 2, 20), bar);
-        GUI.DrawTexture(new Rect(30, 30, stat.hp * 2, 20), blood);
+        GUI.DrawTexture(new Rect(30, 30, Mathf.Max(0, stat.hp) * 2, 20), blood);
 
 
         // mp
@@ -61,5 +62,12 @@ public class mainGUI : MonoBehaviour
             GUI.DrawTexture(new Rect(30 + 30 * i, 80, 25, 25 * Mathf.Max(0, Mathf.Min(1, k))), shadow);
             
         }
+
+        // weapon
+        Texture2D left = Resources.Load<Texture2D>(role.weapon[0].icon_path);
+        Texture2D right = Resources.Load<Texture2D>(role.weapon[1].icon_path);
+        GUI.DrawTexture(new Rect(30, 115, 110, 60), weapon_back);
+        GUI.DrawTexture(new Rect(30, 120, 50, 50), left);
+        GUI.DrawTexture(new Rect(90, 120, 50, 50), right);
     }
 }

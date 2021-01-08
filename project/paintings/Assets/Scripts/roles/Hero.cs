@@ -5,6 +5,8 @@ using UnityEngine;
 public class Hero : Role
 {
     // Start is called before the first frame update
+    //public GameObject wObj_L, wObj_R;
+    public int weapon_choice = 0;
     protected override void Start()
     {
         base.Start();
@@ -23,19 +25,26 @@ public class Hero : Role
         sound_run.volume = 0.6f;
         sound_run.loop = true;
 
-        sound_attack.clip = Resources.Load<AudioClip>("music/stickman/attack");
-        sound_attack.volume = 0.4f;
-        sound_attack.loop = false;
-
         // add default weapon
-        var obj = Instantiate(GameObject.Find("Weapon"));
-        obj.layer = LayerMask.NameToLayer("Weapon");
-        var fist = obj.AddComponent<Fist>();
-        fist.set_owner(gameObject);
-        weapon[0] = fist;
-        weapon[1] = weapon[0];
-        obj.transform.parent = gameObject.transform;
-        obj.transform.position = obj.transform.parent.position;
+        //Debug.Log(transform.GetChild(0).gameObject.name);
+        wObj_L = transform.GetChild(0).Find("left arm").GetChild(0).GetChild(0).gameObject;
+        wObj_R = transform.GetChild(0).Find("right arm").GetChild(0).GetChild(0).gameObject;
+        wObj_L.layer = LayerMask.NameToLayer("Weapon");
+        var fist_l = wObj_L.AddComponent<Sword>();
+        fist_l.set_owner(gameObject);
+        weapon[0] = fist_l;
+        //wObj_L.transform.parent = gameObject.transform;
+        //wObj_L.transform.position = transform.position;
+        weapon[0].onEquip(0);
+
+        wObj_R.layer = LayerMask.NameToLayer("Weapon");
+        var fist_r = wObj_R.AddComponent<Fist>();
+        fist_r.set_owner(gameObject);
+        weapon[1] = fist_r;
+        //wObj_R.transform.parent = gameObject.transform;
+        //wObj_R.transform.position = transform.position;
+        weapon[1].onEquip(1);
+
 
         gameObject.AddComponent<InputHandler>();
 
@@ -48,16 +57,34 @@ public class Hero : Role
         stat.Init();
 
         skill[0] = gameObject.AddComponent<Heal>();
-        skill[0].init(this, stat, 0);
+        skill[0].init(this, stat, 0, 0, null);
         skill[1] = gameObject.AddComponent<Fireball>();
-        skill[1].init(this, stat, 0);
+        skill[1].init(this, stat, 0, 1, null);
 
-    }   
+
+    }
 
     // Update is called once per frame
     protected override void FixedUpdate()
     {
         base.FixedUpdate();
         background_update();
+    }
+
+    public void change_weapon() {
+        weapon_choice = 1 - weapon_choice;
+        Destroy(wObj_L.GetComponent<Weapon>());
+        Weapon weapon_l = null;
+        if (weapon_choice == 0) weapon_l = wObj_L.AddComponent<Sword>(); else weapon_l = wObj_L.AddComponent<HugeSword>();
+        weapon_l.set_owner(gameObject);
+        weapon[0] = weapon_l;
+        //wObj_L.transform.parent = gameObject.transform;
+        //wObj_L.transform.position = transform.position;
+        weapon[0].onEquip(0);
+    }
+    public override void dead()
+    {
+        base.dead();
+
     }
 }
